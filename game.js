@@ -184,7 +184,7 @@ function setup(){
 function keypress(evt){
     // space
     if(evt.key==' '){
-        if(game.player.in_orbit){
+        if(game.player.in_orbit && !game.rebase){
             jump(game.base);
         }
     }
@@ -201,9 +201,13 @@ function draw(ele){
 }
 
 function draw_screen(){
-    draw(game.player);
-    draw(game.target);
-    draw(game.base);
+    [
+        game.player,
+        game.target,
+        game.base
+    ].forEach(function(ele){
+        if(ele){ draw(ele); }
+    });
 }
 
 function loop(){ 
