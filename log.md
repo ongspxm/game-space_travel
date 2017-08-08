@@ -37,3 +37,11 @@ trying simple geometrical orbit instead.
 instead of writing the math to calculate the change in the direction, imma setting the position directly. it will be much simpler. but it is not that simpler.
 
 i think the update bearing function must be called only when needed. by only updating the bearing when needed, the direction is set and the direction will not change when the hero is in orbit.
+
+---
+
+checked the keyboard event for firefox and chrome. looks like i have to use the `key` as the identifier to tell which key stroke is pressed.
+
+---
+
+function to rebase the planet and generate a new target planet is done.
