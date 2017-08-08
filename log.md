@@ -19,3 +19,7 @@ From celljs experience, I learnt that you can actually embed data in the HTML el
 I am going to add the centering of the circles early on to prevent future calculation nightmares. Created a new function `draw` for all these updating of elements.
 
 Have to check on how to delete HTML elements.
+
+---
+
+the physics now is not really realistic, but i guess it will do for now. it doesn't take into account the change in the strength of gravity as the distance between the planets changes.
