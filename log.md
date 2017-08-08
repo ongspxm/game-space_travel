@@ -23,3 +23,17 @@ Have to check on how to delete HTML elements.
 ---
 
 the physics now is not really realistic, but i guess it will do for now. it doesn't take into account the change in the strength of gravity as the distance between the planets changes.
+
+---
+
+now figuring out how to make the player orbit around the planet after engaged in orbit.
+
+tried to use the actual physics calculation of setting a tangent and then making the object keep falling towards the planet (through gravity). it produces a very good effect, it is very realistic, but it doesn't work well for gameplay.
+
+trying simple geometrical orbit instead.
+
+---
+
+instead of writing the math to calculate the change in the direction, imma setting the position directly. it will be much simpler. but it is not that simpler.
+
+i think the update bearing function must be called only when needed. by only updating the bearing when needed, the direction is set and the direction will not change when the hero is in orbit.
