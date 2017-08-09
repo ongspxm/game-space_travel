@@ -33,10 +33,17 @@ var PATH_P = COIN_R*15;
 var PATH_S = COIN_R*4;
 var PATH_M = 5;
 
-// sun radius, gravity, generate on 5th jump 
+// sun radius, gravity, generate on 5th jump, threshold
 var SUN_R = PLANET_R*3;
 var SUN_G = PLANET_G*0.8;
 var SUN_J = 5;
+var SUN_T = 0.2;
+
+// asteriod, generated on 10th jump, threshold, planet dist
+var STONE_R = PLANET_R*0.5;
+var STONE_J = 2;
+var STONE_T = 1;
+var STONE_D = PLANET_R*2;
 
 /* misc functions */
 function $(id){
@@ -137,12 +144,10 @@ function gen_planet(no_coins){
         game.canvas.appendChild(coin);
     }
     
-    var have_sun = false;
-    var value = Math.random();
-    console.log(value);
-    if(game.jumps>SUN_J && value<0.2){ have_sun = true; }
-
     // sun
+    var have_sun = false;
+    if(game.jumps>SUN_J && Math.random()<SUN_T){ have_sun = true; }
+
     if(have_sun){
         var sun = init_circle(SUN_R);
         sun.className = 'sun';
@@ -155,9 +160,31 @@ function gen_planet(no_coins){
         game.sun = sun;
         game.canvas.appendChild(sun);
     }
-    
+   
+    // stone 
+    var have_stone = false;
+    if(!have_sun && game.jumps>STONE_J && Math.random()<STONE_T){
+        have_stone = true; 
+    }
+
+    if(have_stone){
+        var stone = init_circle(STONE_R);
+        stone.className = 'stone';
+
+        var bearing = get_bearing(game.base, planet);
+        var dist = PLANET_R + STONE_R + STONE_D;
+        
+        stone.x = planet.x + Math.sin(bearing) * dist - STONE_R;
+        stone.x += 2*(Math.random()<0.5)*STONE_R;
+        stone.y = planet.y - Math.cos(bearing) * dist;
+
+        redraw(stone);
+        game.stone = stone;
+        game.canvas.appendChild(stone);
+    }
+
     // pathway coins
-    if(!have_sun){
+    if(!have_sun && !have_stone){
         var num = Math.round(Math.random()*PATH_M);
         var bearing = get_bearing(game.base, planet);
         
@@ -166,7 +193,7 @@ function gen_planet(no_coins){
             var coin = init_circle(COIN_R);
             coin.className = 'coin';
             
-            var dist = (PLANET_R + PATH_P + PATH_S*i);
+            var dist = PLANET_R + PATH_P + PATH_S*i;
             coin.x = planet.x + Math.sin(bearing) * dist;
             coin.y = planet.y - Math.cos(bearing) * dist;
 
@@ -228,6 +255,9 @@ function remove_extra(){
 
     remove_ele(game.sun);
     game.sun = 0;
+
+    remove_ele(game.stone);
+    game.stone = 0;
 }
 
 function check_engaged(planet){
@@ -277,6 +307,9 @@ function jump(planet){
     player.in_orbit = false;
     player.bearing = -1;
     
+    // difficulty
+    if(game.jumps%5==0){ player.a += PLAYER_A*0.25; }
+
     update_score(game.base.coins.length * 3);
     game.jumps += 1;
 }

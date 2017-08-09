@@ -136,4 +136,10 @@ additional score for jumping quick. each uncollected planet coins is worth 3. ad
 
 ---
 
+**part 11**
+
+other than adding in the asteriods, i will be putting in the details to make the game a little harder, help increasing the difficulty of the game itself. some how the value doesn't seem to increase. this is probably a bug that i need to fix.
+
+the difficulty increase looks fine, now we will be moving on to the asteroid generation. drew the asteriod (or the stone). that will be all for now. in the next section, we will be adding the collision detection to the asteriod.
+
 
