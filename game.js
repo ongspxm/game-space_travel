@@ -23,7 +23,7 @@ var REBASE_P = 70;
 
 // coin radius, atmosphere padding, max num of coins
 var COIN_R = 5;
-var COIN_A = 20;
+var COIN_A = 5;
 var COIN_M = 5;
 
 /* misc functions */
@@ -41,7 +41,10 @@ function init_circle(radius){
 }
 
 function remove_ele(ele){
-    if(ele){ game.canvas.removeChild(ele); }
+    if(!ele){ return; }
+
+    game.canvas.removeChild(ele);
+    if(ele.coins){ ele.coins.forEach(remove_ele); }
 }
 
 function get_dist(a, b){
@@ -103,12 +106,19 @@ function gen_planet(no_coins){
     
     // coins 
     var num = COIN_M;
-    var da = Math.PI / num;  
+    var da = 2*Math.PI / num;  
     var dist = PLANET_R + COIN_A + COIN_R;
     
+    planet.coins = [];
     for(var i=0; i<num; i++){
-        var coin = document.createElement('div');
-        console.log(dist*Math.sin(da*i), dist*Math.cos(da*i));
+        var coin = init_circle(COIN_R);
+        coin.className = 'coin';
+
+        coin.x = planet.x + dist*Math.sin(da*i);
+        coin.y = planet.y + dist*Math.cos(da*i);
+        
+        planet.coins.push(coin);
+        game.canvas.appendChild(coin);
     }
 
     return planet;
@@ -142,6 +152,12 @@ function rebase(){
     var d = y - game.base.y;
     game.base.y -= d;
     game.player.y -= d;
+
+    if(game.base.coins){
+        game.base.coins.forEach(function(coin){
+            coin.y -= d;
+        });
+    }
 }
 
 function check_engaged(planet){
@@ -247,6 +263,14 @@ function draw_screen(){
     ].forEach(function(ele){
         if(ele){ draw(ele); }
     });
+
+    if(game.base && game.base.coins){
+        game.base.coins.forEach(draw);
+    }
+    
+    if(game.target && game.target.coins){
+        game.target.coins.forEach(draw);
+    }
 }
 
 function game_over(){

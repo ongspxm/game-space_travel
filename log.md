@@ -63,3 +63,17 @@ refactoring done. time to add the bell and whistles. first up, tokens to collect
 **side track**: a little talk about the reasons why i picked to have everything round for this particular project. it is for a very simple reasons. the calculations are much easier. being very lazy, it would be a chore to implement multiple axis checks using axis collision detection. hence the decision to use round elements. just check the radius and you are done.
 
 abit of refactoring done here for future easy generation of circle objects. that's all for now. next part, i will adding in the coins. refactoring is an important part of creating good and clean code. always leave the code a bit better than you found it.
+
+---
+
+**part 5**
+
+okay, i realize the inconsistency in the live videos length. i will now try to keep it around 30 mins.
+
+this part, i will be adding in the coins for the game play.
+
+the generation of coins is done, together with the movement and removal of coins. now for the scoring mechanism 
+
+---
+
+
