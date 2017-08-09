@@ -76,4 +76,14 @@ the generation of coins is done, together with the movement and removal of coins
 
 ---
 
+**part 6**
 
+getting the coins to work, the scoring. i am going to design it such that it is possible for me to add coins path in the middle of the planets later on.
+
+the game mechanics is pretty much done. added the scoring mechanism. it's a playable game.
+
+there is some lag happening here. i guess i am updating the style far too often. now imma refactor the code to reduce the restyling.
+
+removed the redrawing every loop. loks like that's not the problem, but rather it is more the issue of having too many coins.
+
+imma ending this part here. in the next part, we will be focusing on resolving the problem of lag.

@@ -1,5 +1,5 @@
 var game = {};
-var fps = 20;
+var fps = 24;
 
 // game width, height, border, padding
 var GAME_W = 300;
@@ -10,21 +10,22 @@ var GAME_P = GAME_B + 10;
 // radius, angular velocity, escape velocity
 var PLAYER_R = 10;
 var PLAYER_A = Math.PI/180*90;
-var PLAYER_V = 20;
+var PLAYER_V = 10;
 
-// radius, gravity, atmosphere padding
+// radius, gravity, atmosphere padding, gameplay buffer
 var PLANET_R = 50;
-var PLANET_G = 1;
+var PLANET_G = 5;
 var PLANET_A = 4;
+var PLANET_B = 5;
 
 // rebase velocity, rebase padding
-var REBASE_V = 10;
+var REBASE_V = 40;
 var REBASE_P = 70;
 
 // coin radius, atmosphere padding, max num of coins
 var COIN_R = 5;
 var COIN_A = 5;
-var COIN_M = 5;
+var COIN_M = 20;
 
 /* misc functions */
 function $(id){
@@ -96,11 +97,13 @@ function gen_planet(no_coins){
     // gravity & atmosphere
     planet.g = PLANET_G;
     planet.a = PLANET_A;
+    planet.b = PLANET_B;
 
     // orbit values
     planet.bearing = 0;
     planet.direction = -1;
-
+    
+    redraw(planet);
     game.canvas.appendChild(planet);
     if(no_coins){ return planet; }
     
@@ -115,12 +118,14 @@ function gen_planet(no_coins){
         coin.className = 'coin';
 
         coin.x = planet.x + dist*Math.sin(da*i);
-        coin.y = planet.y + dist*Math.cos(da*i);
+        coin.y = planet.y - dist*Math.cos(da*i);
+        coin.bearing = da*i;
         
+        redraw(coin);
         planet.coins.push(coin);
         game.canvas.appendChild(coin);
     }
-
+    
     return planet;
 }
 
@@ -156,14 +161,17 @@ function rebase(){
     if(game.base.coins){
         game.base.coins.forEach(function(coin){
             coin.y -= d;
+            redraw(coin);
         });
     }
+
+    redraw(game.base);
 }
 
 function check_engaged(planet){
     var player = game.player;
 
-    if(!player.in_orbit && get_dist(player, planet) <= planet.r+planet.a+player.r){
+    if(!player.in_orbit && get_dist(player, planet) <= planet.r+planet.a+player.r+planet.b){
         player.in_orbit = true;
 
         planet.g = 0;
@@ -220,6 +228,17 @@ function check_is_alive(){
     return true;
 }
 
+function check_coin(coin, is_planet){
+    var player = game.player;
+    if(get_dist(player, coin) <= player.r+coin.r){ 
+        if(is_planet){
+            game.base.coins.splice(game.base.coins.indexOf(coin),1);
+            game.canvas.removeChild(coin);
+            update_score();
+        }
+    }
+}
+
 /* base functions */
 function setup(){
     // game canvas
@@ -231,6 +250,10 @@ function setup(){
     // game player
     game.player = gen_player();
     game.target = gen_planet(no_coins=true);
+    
+    // game.score
+    game.score = 0;
+    game.score_text = $('score');
 
     game.loop = setInterval(loop, 1000/fps);
     document.body.onkeypress = keypress;
@@ -245,32 +268,20 @@ function keypress(evt){
     }
 }
 
+function update_score(score){
+    if(!score){ score = 1; }
+    game.score += score;
+    game.score_text.innerText = game.score;
+}
+
 function move(ele){
     if(ele.dx){ ele.x += ele.dx; }
     if(ele.dy){ ele.y += ele.dy; }
 }
 
-function draw(ele){
+function redraw(ele){
     ele.style.left = ele.x - ele.r;
     ele.style.top = ele.y - ele.r;
-}
-
-function draw_screen(){
-    [
-        game.player,
-        game.target,
-        game.base
-    ].forEach(function(ele){
-        if(ele){ draw(ele); }
-    });
-
-    if(game.base && game.base.coins){
-        game.base.coins.forEach(draw);
-    }
-    
-    if(game.target && game.target.coins){
-        game.target.coins.forEach(draw);
-    }
 }
 
 function game_over(){
@@ -282,18 +293,21 @@ function loop(){
     if(!game.player.in_orbit){
         add_gravity(game.target);
         update_bearing(game.target);
+        check_engaged(game.target);
     }else{
         orbit(game.base);
-
         if(game.rebase){ rebase(); }
     }
-    move(game.player);
 
-    check_engaged(game.target);
-    draw_screen();
-
-    if(!check_is_alive()){
-        game_over();
+    // coin checks
+    if(game.base && game.base.coins){
+        game.base.coins.forEach(function(c){
+            check_coin(c, is_planet=true);
+        });
     }
+
+    move(game.player); 
+    redraw(game.player);
+    if(!check_is_alive()){ game_over(); }
 }
 

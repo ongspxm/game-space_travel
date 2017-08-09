@@ -18,6 +18,13 @@ body{
     border-radius:50%;
 }
 
+#score{
+    width:100%;
+    
+    color:#fff;
+    text-align:center;
+}
+
 .hero{
     background:#f00;
 }
