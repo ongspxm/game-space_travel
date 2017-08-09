@@ -142,4 +142,14 @@ other than adding in the asteriods, i will be putting in the details to make the
 
 the difficulty increase looks fine, now we will be moving on to the asteroid generation. drew the asteriod (or the stone). that will be all for now. in the next section, we will be adding the collision detection to the asteriod.
 
+---
 
+**part 12**
+
+this part, we will be adding the asteriod collision logic. let's see what we have for now.
+
+the game is mostly done now. even the reset. now for the instructions. the work here is almost done.
+
+yep and we are done. a game in pure vanilla javascript, html and css
+
+# fin

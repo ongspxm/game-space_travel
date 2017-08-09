@@ -309,8 +309,12 @@ function jump(planet){
     
     // difficulty
     if(game.jumps%5==0){ player.a += PLAYER_A*0.25; }
-
-    update_score(game.base.coins.length * 3);
+    
+    // fast jump bonus
+    if(game.base.coins){
+        update_score(game.base.coins.length * 3);
+    }
+    
     game.jumps += 1;
 }
 
@@ -325,6 +329,14 @@ function check_is_alive(){
     }
 
     return true;
+}
+
+function check_stone_collision(){
+    if(get_dist(game.player, game.stone) <= game.player.r + game.stone.r){
+        return true;
+    }
+
+    return false;
 }
 
 function check_planet_coins(){
@@ -375,11 +387,30 @@ function setup(){
     document.body.onkeypress = keypress;
 }
 
+function clear_all(){
+    delete game.canvas;
+    delete game.player;
+    
+    delete game.target;
+    delete game.base;
+    
+    delete game.path;
+    delete game.sun;
+    delete game.stone;
+    
+    $('game').innerHTML = '<div id="score"></div>';
+}
+
 function keypress(evt){
     // space
     if(evt.key==' '){
+        if(!game.loop){
+            clear_all();
+            setup();
+        }
+
         if(game.player.in_orbit && !game.rebase){
-            jump(game.base);
+            return jump(game.base);
         }
     }
 }
@@ -402,7 +433,9 @@ function redraw(ele){
 
 function game_over(){
     clearTimeout(game.loop);
-    alert('Sorry. You died');
+    delete game.loop;
+
+    alert('Score: '+game.score);
 }
 
 function loop(){
@@ -414,6 +447,9 @@ function loop(){
         // extra
         if(game.sun){ add_gravity(game.sun); }
         if(game.path){ check_path_coins(); }
+        if(game.stone && check_stone_collision()){
+            return game_over();
+        }
     }else{
         orbit(game.base);
         if(game.base.coins){ check_planet_coins(); }
@@ -423,6 +459,8 @@ function loop(){
 
     move(game.player); 
     redraw(game.player);
-    if(!check_is_alive()){ game_over(); }
+    if(!check_is_alive()){ 
+        return game_over(); 
+    }
 }
 
