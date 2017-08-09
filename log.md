@@ -101,3 +101,13 @@ much faster now, using the bearing for calculation. looks like the `get_distance
 for accuracy, using half segments of the maximum coin for checking. significant reduction in laginess. good progress. now for the line of coins in between the planets. imma working out some values on paper first.
 
 setting up the basic structure for adding the path coins in. in the next part, we will be adding the coins into the loop.
+
+---
+
+**part 8**
+
+this section, we are going to be adding in the coins on the paths between the planets. these coins will be placed closed to the target planet along the way. the straight line path. after that, we will change according to the difficulty.
+
+now that we make it appear, we must make a dissappear when it reaches the target planet as well. we will be adding the following into the `check_engaged` portion of the code.
+
+now to add in the function to put the coins into gameplay. the path coins are now in play.

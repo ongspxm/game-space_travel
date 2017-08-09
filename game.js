@@ -14,7 +14,7 @@ var PLAYER_V = 10;
 
 // radius, gravity, atmosphere padding, gameplay buffer
 var PLANET_R = 50;
-var PLANET_G = 5;
+var PLANET_G = 2;
 var PLANET_A = 4;
 var PLANET_B = 5;
 
@@ -25,11 +25,12 @@ var REBASE_P = 70;
 // coin radius, atmosphere padding, max num of coins
 var COIN_R = 5;
 var COIN_A = 5;
-var COIN_M = 10;
+var COIN_MAX = 10;
+var COIN_MIN = 3;
 
 // path padding (from planet), spacing, max num of coins
-var PATH_P = 50;
-var PATH_S = 10;
+var PATH_P = COIN_R*15;
+var PATH_S = COIN_R*4;
 var PATH_M = 5;
 
 /* misc functions */
@@ -113,7 +114,7 @@ function gen_planet(no_coins){
     if(no_coins){ return planet; }
     
     // planet coins 
-    var num = COIN_M;
+    var num = Math.round(Math.random() * (COIN_MAX-COIN_MIN)) + COIN_MIN;
     var da = 2*Math.PI / num;  
     var dist = PLANET_R + COIN_A + COIN_R;
     
@@ -132,8 +133,22 @@ function gen_planet(no_coins){
     }
     
     // pathway coins
-    var bearing = get_bearing(planet, game.base);
-    console.log(get_bearing(planet, game.base));
+    var num = Math.round(Math.random()*PATH_M);
+    var bearing = get_bearing(game.base, planet);
+    
+    game.path = [];
+    for(var i=0; i<num; i++){
+        var coin = init_circle(COIN_R);
+        coin.className = 'coin';
+        
+        var dist = (PLANET_R + PATH_P + PATH_S*i);
+        coin.x = planet.x + Math.sin(bearing) * dist;
+        coin.y = planet.y - Math.cos(bearing) * dist;
+
+        redraw(coin);
+        game.path.push(coin);
+        game.canvas.appendChild(coin);
+    }
     
     return planet;
 }
@@ -190,6 +205,9 @@ function check_engaged(planet){
         remove_ele(game.base);
         game.base = planet;
         game.rebase = true;
+
+        game.path.forEach(remove_ele);
+        game.path = [];
     }
 }
 
@@ -244,8 +262,19 @@ function check_planet_coins(){
     if(player.bearing < 0){ return; }
 
     game.base.coins.forEach(function(coin){
-        if(Math.abs(player.bearing - coin.bearing) <= Math.PI/COIN_M){
+        if(Math.abs(player.bearing - coin.bearing) <= Math.PI/COIN_MAX){
             game.base.coins.splice(game.base.coins.indexOf(coin),1);
+            game.canvas.removeChild(coin);
+            update_score();
+        }
+    });
+}
+
+function check_path_coins(){
+    var player = game.player;
+    game.path.forEach(function(coin){
+        if(get_dist(coin, player) <= coin.r+player.r){
+            game.path.splice(game.path.indexOf(coin),1);
             game.canvas.removeChild(coin);
             update_score();
         }
@@ -267,6 +296,9 @@ function setup(){
     // game.score
     game.score = 0;
     game.score_text = $('score');
+    
+    // game mechanics items
+    game.path = [];
 
     game.loop = setInterval(loop, 1000/fps);
     document.body.onkeypress = keypress;
@@ -307,6 +339,8 @@ function loop(){
         add_gravity(game.target);
         update_bearing(game.target);
         check_engaged(game.target);
+
+        check_path_coins();
     }else{
         orbit(game.base);
         if(game.rebase){ rebase(); }
