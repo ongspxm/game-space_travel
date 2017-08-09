@@ -57,3 +57,9 @@ with the addition of the checking of external boundaries. the basic game is done
 now are changing to using global variables for the game canvas for easier calculation, to prevent bugs, where the player freezes when it is beyond the borders. the problem lies in the x, y positioning of the elements is offset by the radius, hence the complications in determining if the elements is out of boundaries.
 
 refactoring done. time to add the bell and whistles. first up, tokens to collect.
+
+---
+
+**side track**: a little talk about the reasons why i picked to have everything round for this particular project. it is for a very simple reasons. the calculations are much easier. being very lazy, it would be a chore to implement multiple axis checks using axis collision detection. hence the decision to use round elements. just check the radius and you are done.
+
+abit of refactoring done here for future easy generation of circle objects. that's all for now. next part, i will adding in the coins. refactoring is an important part of creating good and clean code. always leave the code a bit better than you found it.

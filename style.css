@@ -15,14 +15,17 @@ body{
 
 #game *{
     position:absolute;
+    border-radius:50%;
 }
 
-#hero{
-    border-radius:50%;
+.hero{
     background:#f00;
 }
 
 .planet{
-    border-radius:50%;
     background:#0f0;
+}
+
+.coins{
+    background:#ff0;
 }

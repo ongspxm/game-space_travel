@@ -12,7 +12,7 @@ var PLAYER_R = 10;
 var PLAYER_A = Math.PI/180*90;
 var PLAYER_V = 20;
 
-// radius, gravity, atmosphere
+// radius, gravity, atmosphere padding
 var PLANET_R = 50;
 var PLANET_G = 1;
 var PLANET_A = 4;
@@ -21,12 +21,18 @@ var PLANET_A = 4;
 var REBASE_V = 10;
 var REBASE_P = 70;
 
+// coin radius, atmosphere padding, max num of coins
+var COIN_R = 5;
+var COIN_A = 20;
+var COIN_M = 5;
+
 /* misc functions */
 function $(id){
     return document.getElementById(id);
 }
 
-function init_circle(ele, radius){
+function init_circle(radius){
+    var ele = document.createElement('div');
     ele.r = radius;
     ele.style.width = radius*2;
     ele.style.height = radius*2;
@@ -48,7 +54,7 @@ function get_bearing(target, base){
     var dy = -(target.y - base.y);
 
     var rad = Math.atan(dx/dy);
-    
+
     if(dy>0){
         if(dx<0){
             rad += Math.PI*2;
@@ -61,59 +67,71 @@ function get_bearing(target, base){
 }
 
 /* game functions */
-function reset_hero(){
-    var player = game.player; 
-    
+function gen_player(){ 
+    var player = init_circle(PLAYER_R);
+    player.className = 'hero';
     player.x = 0;
     player.y = 0;
-    init_circle(player, PLAYER_R);
 
     player.dx = 0;
     player.dy = 0;
     player.a = PLAYER_A;
     player.v = PLAYER_V;
-    
+
     player.in_orbit = false;
+
+    game.canvas.appendChild(player);
+    return player;
 }
 
-function gen_planet(){
-    var planet = document.createElement('div');
+function gen_planet(no_coins){
+    var planet = init_circle(PLANET_R); 
     planet.className = 'planet';
     planet.x = Math.random()*(GAME_W - 2*PLANET_R) + PLANET_R;
     planet.y = REBASE_P;
-    
+
     // gravity & atmosphere
     planet.g = PLANET_G;
     planet.a = PLANET_A;
-    
+
     // orbit values
     planet.bearing = 0;
     planet.direction = -1;
 
-    init_circle(planet, PLANET_R);
     game.canvas.appendChild(planet);
+    if(no_coins){ return planet; }
     
+    // coins 
+    var num = COIN_M;
+    var da = Math.PI / num;  
+    var dist = PLANET_R + COIN_A + COIN_R;
+    
+    for(var i=0; i<num; i++){
+        var coin = document.createElement('div');
+        console.log(dist*Math.sin(da*i), dist*Math.cos(da*i));
+    }
+
     return planet;
 }
 
 function add_gravity(planet){
-    var player = game.player; 
-    
+    var player = game.player;
+
     var dx = planet.x - player.x;
     var dy = planet.y - player.y;
-    
+
     // calculate difference in the ratio
     var dr = get_dist(player, planet) / planet.g;
     player.dx += dx/dr;
     player.dy += dy/dr;
 }
 
-function rebase(){    
+function rebase(){
     var y = game.base.y;
     var h = GAME_H - REBASE_P;
 
     if(y<h){ y -= REBASE_V; }
-    
+
     // done rebasing
     if(y>=h){
         y = h;
@@ -131,11 +149,11 @@ function check_engaged(planet){
 
     if(!player.in_orbit && get_dist(player, planet) <= planet.r+planet.a+player.r){
         player.in_orbit = true;
-        
+
         planet.g = 0;
         player.dx = 0;
         player.dy = 0;
-        
+
         remove_ele(game.base);
         game.base = planet;
         game.rebase = true;
@@ -144,7 +162,7 @@ function check_engaged(planet){
 
 function update_bearing(planet){
     var bearing = get_bearing(game.player, planet);
-    
+
     if(bearing < planet.bearing){
         planet.direction = -1;
     }else{
@@ -156,18 +174,18 @@ function update_bearing(planet){
 
 function orbit(planet){
     var player = game.player;
-    
+
     // y axis reverse
     var bearing = get_bearing(player, planet) + planet.direction * player.a/fps;
-    var dist = player.r + planet.r + planet.a; 
+    var dist = player.r + planet.r + planet.a;
     player.x = planet.x + Math.sin(bearing)*dist;
     player.y = planet.y - Math.cos(bearing)*dist;
 }
 
 function jump(planet){
     var player = game.player;
-    var bearing = get_bearing(player, planet); 
-    
+    var bearing = get_bearing(player, planet);
+
     player.dx = Math.sin(bearing) * player.v;
     player.dy = -Math.cos(bearing) * player.v;
     player.in_orbit = false;
@@ -182,22 +200,22 @@ function check_is_alive(){
     if(player.y<-1*GAME_P || player.y>GAME_H+GAME_P){
         return false;
     }
-    
+
     return true;
 }
 
 /* base functions */
 function setup(){
+    // game canvas
     game.canvas = $('game');
     game.canvas.style.width = GAME_W;
     game.canvas.style.height = GAME_H;
     game.canvas.style.borderWidth = GAME_B;
+    
+    // game player
+    game.player = gen_player();
+    game.target = gen_planet(no_coins=true);
 
-    game.player = $('hero');
-    reset_hero();
-    
-    game.target = gen_planet();
-    
     game.loop = setInterval(loop, 1000/fps);
     document.body.onkeypress = keypress;
 }
@@ -236,20 +254,20 @@ function game_over(){
     alert('Sorry. You died');
 }
 
-function loop(){ 
+function loop(){
     if(!game.player.in_orbit){
         add_gravity(game.target);
         update_bearing(game.target);
     }else{
         orbit(game.base);
-        
-        if(game.rebase){ rebase(); } 
-    }
-    move(game.player); 
 
-    check_engaged(game.target); 
-    draw_screen(); 
-    
+        if(game.rebase){ rebase(); }
+    }
+    move(game.player);
+
+    check_engaged(game.target);
+    draw_screen();
+
     if(!check_is_alive()){
         game_over();
     }
