@@ -33,9 +33,10 @@ var PATH_P = COIN_R*15;
 var PATH_S = COIN_R*4;
 var PATH_M = 5;
 
-// sun radius, gravity;
+// sun radius, gravity, generate on 5th jump 
 var SUN_R = PLANET_R*3;
-var SUN_G = PLANET_G*3;
+var SUN_G = PLANET_G*0.8;
+var SUN_J = 5;
 
 /* misc functions */
 function $(id){
@@ -136,36 +137,45 @@ function gen_planet(no_coins){
         game.canvas.appendChild(coin);
     }
     
+    var have_sun = false;
+    var value = Math.random();
+    console.log(value);
+    if(game.jumps>SUN_J && value<0.2){ have_sun = true; }
+
     // sun
-    var sun = init_circle(SUN_R);
-    sun.className = 'sun';
-    
-    sun.x = -0.5*SUN_R + Math.round(Math.random())*(GAME_W+SUN_R);
-    sun.y = GAME_H / 2;
-     
-    redraw(sun);
-    game.sun = sun;
-    game.canvas.appendChild(sun);
-
-    
-    // pathway coins
-    var num = Math.round(Math.random()*PATH_M);
-    var bearing = get_bearing(game.base, planet);
-    
-    game.path = [];
-    for(var i=0; i<num; i++){
-        var coin = init_circle(COIN_R);
-        coin.className = 'coin';
+    if(have_sun){
+        var sun = init_circle(SUN_R);
+        sun.className = 'sun';
         
-        var dist = (PLANET_R + PATH_P + PATH_S*i);
-        coin.x = planet.x + Math.sin(bearing) * dist;
-        coin.y = planet.y - Math.cos(bearing) * dist;
+        sun.x = -0.5*SUN_R + (planet.x<(GAME_W/2))*(GAME_W+SUN_R);
+        sun.y = GAME_H / 4;
+        sun.g = SUN_G;
 
-        redraw(coin);
-        game.path.push(coin);
-        game.canvas.appendChild(coin);
+        redraw(sun);
+        game.sun = sun;
+        game.canvas.appendChild(sun);
     }
     
+    // pathway coins
+    if(!have_sun){
+        var num = Math.round(Math.random()*PATH_M);
+        var bearing = get_bearing(game.base, planet);
+        
+        game.path = [];
+        for(var i=0; i<num; i++){
+            var coin = init_circle(COIN_R);
+            coin.className = 'coin';
+            
+            var dist = (PLANET_R + PATH_P + PATH_S*i);
+            coin.x = planet.x + Math.sin(bearing) * dist;
+            coin.y = planet.y - Math.cos(bearing) * dist;
+
+            redraw(coin);
+            game.path.push(coin);
+            game.canvas.appendChild(coin);
+        }
+    }
+
     return planet;
 }
 
@@ -217,7 +227,7 @@ function remove_extra(){
     game.path = [];
 
     remove_ele(game.sun);
-    game.sun = null;
+    game.sun = 0;
 }
 
 function check_engaged(planet){
@@ -266,6 +276,9 @@ function jump(planet){
     player.dy = -Math.cos(bearing) * player.v;
     player.in_orbit = false;
     player.bearing = -1;
+    
+    update_score(game.base.coins.length * 3);
+    game.jumps += 1;
 }
 
 function check_is_alive(){
@@ -320,6 +333,7 @@ function setup(){
     // game.score
     game.score = 0;
     game.score_text = $('score');
+    game.jumps = 0;
     
     // game mechanics items
     game.path = [];
@@ -365,14 +379,13 @@ function loop(){
         check_engaged(game.target);
 
         // extra
-        console.log(
         if(game.sun){ add_gravity(game.sun); }
         if(game.path){ check_path_coins(); }
     }else{
         orbit(game.base);
-        if(game.rebase){ rebase(); }
+        if(game.base.coins){ check_planet_coins(); }
 
-        check_planet_coins();
+        if(game.rebase){ rebase(); }
     }
 
     move(game.player); 

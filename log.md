@@ -121,3 +121,19 @@ this part, we will be adding in the sun. the sun has a very very high gravity. t
 there is a little lag. but we will deal with that later. now taht we got the sun displayed, we will add in the gravity pull for the sun.
 
 i figured this will take some time. let me debug this first. in the next section, we will be fixing the problem of the sun causing the player to freeze without errors.
+
+---
+
+**part 10**
+
+last part, we had a bug which caused the player to freeze up. i found the bug after searching for a while. it looks like we have forgotten to give the sun gravity. because we never did define the `sun.g`. the `add_gravity` function went bonkers.
+
+anyway, that's fixed now. so now, we are testing the value of the sun's gravity, testing to see which value works better. because the sun is much much closer to the player at the start of the journey, we will have to greatly decrease the value of its pull. unless, we place it in another position.
+
+this value looks good enough for now. we will be sticking to this value. together with the random generation of the sun, this game looks complete. next up, asteriods. but before that, let's shift the sun towards the target a little.
+
+additional score for jumping quick. each uncollected planet coins is worth 3. adding asteriods in the next section.
+
+---
+
+
