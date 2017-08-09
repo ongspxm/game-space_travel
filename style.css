@@ -7,6 +7,7 @@ body{
 
 #game{   
     margin:0 auto;
+    margin-bottom:4rem;
     position:relative;
     overflow:hidden;
 
@@ -27,6 +28,16 @@ body{
     color:#fff;
     text-align:center;
     font-weight:bold;
+}
+
+#highscore ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+#highscore li{
+    margin-bottom:1rem;
 }
 
 .hero{

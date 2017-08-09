@@ -1,6 +1,8 @@
 var game = {};
 var fps = 24;
 
+var score_url = 'https://script.google.com/macros/s/AKfycbyHuWb1p_h_HlLWW0NqtYaLk9UXm6L87N5y7_rXp0cWUVp5UAc/exec?game=stravel';
+
 // game width, height, border, padding
 var GAME_W = 300;
 var GAME_H = 500;
@@ -42,7 +44,7 @@ var SUN_T = 0.2;
 // asteriod, generated on 10th jump, threshold, planet dist
 var STONE_R = PLANET_R*0.5;
 var STONE_J = 2;
-var STONE_T = 1;
+var STONE_T = 0.4;
 var STONE_D = PLANET_R*2;
 
 /* misc functions */
@@ -385,6 +387,7 @@ function setup(){
 
     game.loop = setInterval(loop, 1000/fps);
     document.body.onkeypress = keypress;
+    get_highscore();
 }
 
 function clear_all(){
@@ -436,6 +439,7 @@ function game_over(){
     delete game.loop;
 
     alert('Score: '+game.score);
+    submit_score(game.score);
 }
 
 function loop(){
@@ -464,3 +468,42 @@ function loop(){
     }
 }
 
+/* online score */
+function submit_score(score){
+    var name = prompt('name');
+    if(!name){ return; }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', score_url+'&name='+name+'&score='+score);
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState==4 && xhr.status==200){
+            if(!parseInt(xhr.responseText)){
+                alert('unable to submit score.');   
+            }else{
+                get_highscore();
+            }
+        }
+    };
+    xhr.send();
+}
+
+function get_highscore(){ 
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', score_url);
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState==4 && xhr.status==200){
+            var scores = JSON.parse(xhr.responseText)['top']; 
+            
+            $('highscore').innerHTML = '';
+            var div = document.createElement('ul');
+            scores.forEach(function(score){
+                var ele = document.createElement('li');
+                ele.innerHTML = '<strong>'+score.name+'</strong><br />'+score.score;
+                div.appendChild(ele);
+            });
+
+            $('highscore').appendChild(div);
+        }
+    };
+    xhr.send();
+}

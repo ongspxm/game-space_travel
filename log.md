@@ -152,4 +152,12 @@ the game is mostly done now. even the reset. now for the instructions. the work 
 
 yep and we are done. a game in pure vanilla javascript, html and css
 
-# fin
+---
+
+**part 13**
+
+this last part, we will be adding in the score feature. for global scoring. it is not a fool proof system, it is in no way secure, but for our usage of a casual game, this is good enough for us.
+
+well... that's it
+
+# fin (for real)
