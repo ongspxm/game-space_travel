@@ -65,6 +65,7 @@ function reset_hero(){
     player.dx = 0;
     player.dy = 0;
     player.a = player_a;
+    player.v = player_v;
     
     player.in_orbit = false;
 }
@@ -161,11 +162,22 @@ function jump(planet){
     var player = game.player;
     var bearing = get_bearing(player, planet); 
     
-    player.dx = Math.sin(bearing);
-    player.dy = -Math.cos(bearing);
+    player.dx = Math.sin(bearing) * player.v;
+    player.dy = -Math.cos(bearing) * player.v;
     player.in_orbit = false;
+}
 
-    console.log(player.dx, player.dy);
+function check_is_alive(){
+    var player = game.player;
+    if(player.x<0 || player.x>game.canvas.offsetWidth){
+        return false;
+    }
+
+    if(player.y<0 || player.y>game.canvas.offsetHeight){
+        return false;
+    }
+    
+    return true;
 }
 
 /* base functions */
@@ -210,6 +222,11 @@ function draw_screen(){
     });
 }
 
+function game_over(){
+    clearTimeout(game.loop);
+    alert('Sorry. You died');
+}
+
 function loop(){ 
     if(!game.player.in_orbit){
         add_gravity(game.target);
@@ -220,8 +237,12 @@ function loop(){
         if(game.rebase){ rebase(); } 
     }
     move(game.player); 
-    
+
     check_engaged(game.target); 
     draw_screen(); 
+    
+    if(!check_is_alive()){
+        game_over();
+    }
 }
 

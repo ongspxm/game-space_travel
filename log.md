@@ -44,4 +44,12 @@ checked the keyboard event for firefox and chrome. looks like i have to use the 
 
 ---
 
-function to rebase the planet and generate a new target planet is done.
+function to rebase the planet and generate a new target planet is done. time to work on the jumping function. from one planet to the other. from `base` to `target`.
+
+---
+
+now that jumping works, the game physics is almost done. now just have to do all the gameplay logic, score and the rest of the game mechanics.
+
+with the addition of the checking of external boundaries. the basic game is done. time to add the blings blings.
+
+
