@@ -8,6 +8,7 @@ body{
 #game{   
     margin:0 auto;
     position:relative;
+    overflow:hidden;
 
     background:#000;
     border:0 solid #000;
@@ -35,4 +36,8 @@ body{
 
 .coin{
     background:#ff0;
+}
+
+.sun{
+    background:#f90;
 }

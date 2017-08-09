@@ -33,6 +33,10 @@ var PATH_P = COIN_R*15;
 var PATH_S = COIN_R*4;
 var PATH_M = 5;
 
+// sun radius, gravity;
+var SUN_R = PLANET_R*3;
+var SUN_G = PLANET_G*3;
+
 /* misc functions */
 function $(id){
     return document.getElementById(id);
@@ -132,6 +136,18 @@ function gen_planet(no_coins){
         game.canvas.appendChild(coin);
     }
     
+    // sun
+    var sun = init_circle(SUN_R);
+    sun.className = 'sun';
+    
+    sun.x = -0.5*SUN_R + Math.round(Math.random())*(GAME_W+SUN_R);
+    sun.y = GAME_H / 2;
+     
+    redraw(sun);
+    game.sun = sun;
+    game.canvas.appendChild(sun);
+
+    
     // pathway coins
     var num = Math.round(Math.random()*PATH_M);
     var bearing = get_bearing(game.base, planet);
@@ -154,6 +170,8 @@ function gen_planet(no_coins){
 }
 
 function add_gravity(planet){
+    if(!planet){ return; }
+
     var player = game.player;
 
     var dx = planet.x - player.x;
@@ -192,22 +210,28 @@ function rebase(){
     redraw(game.base);
 }
 
+function remove_extra(){
+    remove_ele(game.base);
+    
+    game.path.forEach(remove_ele);
+    game.path = [];
+
+    remove_ele(game.sun);
+    game.sun = null;
+}
+
 function check_engaged(planet){
     var player = game.player;
 
     if(!player.in_orbit && get_dist(player, planet) <= planet.r+planet.a+player.r+planet.b){
         player.in_orbit = true;
-
-        planet.g = 0;
         player.dx = 0;
         player.dy = 0;
 
-        remove_ele(game.base);
+        remove_extra();
+        
         game.base = planet;
         game.rebase = true;
-
-        game.path.forEach(remove_ele);
-        game.path = [];
     }
 }
 
@@ -340,14 +364,14 @@ function loop(){
         update_bearing(game.target);
         check_engaged(game.target);
 
-        check_path_coins();
+        // extra
+        console.log(
+        if(game.sun){ add_gravity(game.sun); }
+        if(game.path){ check_path_coins(); }
     }else{
         orbit(game.base);
         if(game.rebase){ rebase(); }
-    }
 
-    // coin checks
-    if(game.base && game.base.coins){
         check_planet_coins();
     }
 

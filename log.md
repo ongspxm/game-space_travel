@@ -111,3 +111,13 @@ this section, we are going to be adding in the coins on the paths between the pl
 now that we make it appear, we must make a dissappear when it reaches the target planet as well. we will be adding the following into the `check_engaged` portion of the code.
 
 now to add in the function to put the coins into gameplay. the path coins are now in play.
+
+---
+
+**part 9**
+
+this part, we will be adding in the sun. the sun has a very very high gravity. this will make the curvature a little harder.
+
+there is a little lag. but we will deal with that later. now taht we got the sun displayed, we will add in the gravity pull for the sun.
+
+i figured this will take some time. let me debug this first. in the next section, we will be fixing the problem of the sun causing the player to freeze without errors.
