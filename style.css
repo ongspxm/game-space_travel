@@ -1,16 +1,16 @@
 body{
+    padding:0;
+    margin:0;
+
     text-align:center;
 }
 
-#game{
-    width:300px;
-    height:400px;
-    
+#game{   
     margin:0 auto;
     position:relative;
-    
-    border:20px solid #000;
+
     background:#000;
+    border:0 solid #000;
 }
 
 #game *{
@@ -23,8 +23,6 @@ body{
 }
 
 .planet{
-    width:100px;
-    height:100px;
     border-radius:50%;
     background:#0f0;
 }

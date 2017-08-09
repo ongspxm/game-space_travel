@@ -1,19 +1,25 @@
 var game = {};
 var fps = 20;
 
+// game width, height, border, padding
+var GAME_W = 300;
+var GAME_H = 500;
+var GAME_B = 20;
+var GAME_P = GAME_B + 10;
+
 // radius, angular velocity, escape velocity
-var player_r = 10;
-var player_a = Math.PI/180*90;
-var player_v = 20;
+var PLAYER_R = 10;
+var PLAYER_A = Math.PI/180*90;
+var PLAYER_V = 20;
 
 // radius, gravity, atmosphere
-var planet_r = 50;
-var planet_g = 1;
-var planet_a = 4;
+var PLANET_R = 50;
+var PLANET_G = 1;
+var PLANET_A = 4;
 
 // rebase velocity, rebase padding
-var rebase_v = 10;
-var rebase_p = 70;
+var REBASE_V = 10;
+var REBASE_P = 70;
 
 /* misc functions */
 function $(id){
@@ -60,12 +66,12 @@ function reset_hero(){
     
     player.x = 0;
     player.y = 0;
-    init_circle(player, player_r);
+    init_circle(player, PLAYER_R);
 
     player.dx = 0;
     player.dy = 0;
-    player.a = player_a;
-    player.v = player_v;
+    player.a = PLAYER_A;
+    player.v = PLAYER_V;
     
     player.in_orbit = false;
 }
@@ -73,18 +79,18 @@ function reset_hero(){
 function gen_planet(){
     var planet = document.createElement('div');
     planet.className = 'planet';
-    planet.x = Math.random()*(game.canvas.clientWidth - 2*planet_r) + planet_r;
-    planet.y = rebase_p;
+    planet.x = Math.random()*(GAME_W - 2*PLANET_R) + PLANET_R;
+    planet.y = REBASE_P;
     
     // gravity & atmosphere
-    planet.g = planet_g;
-    planet.a = planet_a;
+    planet.g = PLANET_G;
+    planet.a = PLANET_A;
     
     // orbit values
     planet.bearing = 0;
     planet.direction = -1;
 
-    init_circle(planet, planet_r);
+    init_circle(planet, PLANET_R);
     game.canvas.appendChild(planet);
     
     return planet;
@@ -104,9 +110,9 @@ function add_gravity(planet){
 
 function rebase(){    
     var y = game.base.y;
-    var h = game.canvas.clientHeight - rebase_p;
+    var h = GAME_H - REBASE_P;
 
-    if(y<h){ y -= rebase_v; }
+    if(y<h){ y -= REBASE_V; }
     
     // done rebasing
     if(y>=h){
@@ -169,11 +175,11 @@ function jump(planet){
 
 function check_is_alive(){
     var player = game.player;
-    if(player.x<0 || player.x>game.canvas.offsetWidth){
+    if(player.x<-1*GAME_P || player.x>GAME_W+GAME_P){
         return false;
     }
 
-    if(player.y<0 || player.y>game.canvas.offsetHeight){
+    if(player.y<-1*GAME_P || player.y>GAME_H+GAME_P){
         return false;
     }
     
@@ -183,6 +189,9 @@ function check_is_alive(){
 /* base functions */
 function setup(){
     game.canvas = $('game');
+    game.canvas.style.width = GAME_W;
+    game.canvas.style.height = GAME_H;
+    game.canvas.style.borderWidth = GAME_B;
 
     game.player = $('hero');
     reset_hero();

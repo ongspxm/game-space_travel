@@ -52,4 +52,8 @@ now that jumping works, the game physics is almost done. now just have to do all
 
 with the addition of the checking of external boundaries. the basic game is done. time to add the blings blings.
 
+---
 
+now are changing to using global variables for the game canvas for easier calculation, to prevent bugs, where the player freezes when it is beyond the borders. the problem lies in the x, y positioning of the elements is offset by the radius, hence the complications in determining if the elements is out of boundaries.
+
+refactoring done. time to add the bell and whistles. first up, tokens to collect.
