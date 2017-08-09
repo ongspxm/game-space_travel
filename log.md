@@ -87,3 +87,17 @@ there is some lag happening here. i guess i am updating the style far too often.
 removed the redrawing every loop. loks like that's not the problem, but rather it is more the issue of having too many coins.
 
 imma ending this part here. in the next part, we will be focusing on resolving the problem of lag.
+
+---
+
+**part 7**
+
+last time, we were looking for a solution for the lag. we got it down to the number of coin checks for each round. we found this out because of the significant lag after we altered the number of coins to appear. a recap on how we test this out.
+
+one of the ways we can do this is to do a bearing check and then just doing a distance check on a few coins in the range. the double counting might be a even greater overhead. i will embed the counting inside the main check function instead.
+
+much faster now, using the bearing for calculation. looks like the `get_distance` calculation is pretty expensive. now i just got to make sure the bearing of the player do not jumps from one planet to another, which results in glitchy removal of coins.
+
+for accuracy, using half segments of the maximum coin for checking. significant reduction in laginess. good progress. now for the line of coins in between the planets. imma working out some values on paper first.
+
+setting up the basic structure for adding the path coins in. in the next part, we will be adding the coins into the loop.

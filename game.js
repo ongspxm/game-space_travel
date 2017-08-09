@@ -25,7 +25,12 @@ var REBASE_P = 70;
 // coin radius, atmosphere padding, max num of coins
 var COIN_R = 5;
 var COIN_A = 5;
-var COIN_M = 20;
+var COIN_M = 10;
+
+// path padding (from planet), spacing, max num of coins
+var PATH_P = 50;
+var PATH_S = 10;
+var PATH_M = 5;
 
 /* misc functions */
 function $(id){
@@ -107,7 +112,7 @@ function gen_planet(no_coins){
     game.canvas.appendChild(planet);
     if(no_coins){ return planet; }
     
-    // coins 
+    // planet coins 
     var num = COIN_M;
     var da = 2*Math.PI / num;  
     var dist = PLANET_R + COIN_A + COIN_R;
@@ -125,6 +130,10 @@ function gen_planet(no_coins){
         planet.coins.push(coin);
         game.canvas.appendChild(coin);
     }
+    
+    // pathway coins
+    var bearing = get_bearing(planet, game.base);
+    console.log(get_bearing(planet, game.base));
     
     return planet;
 }
@@ -204,6 +213,7 @@ function orbit(planet){
     var dist = player.r + planet.r + planet.a;
     player.x = planet.x + Math.sin(bearing)*dist;
     player.y = planet.y - Math.cos(bearing)*dist;
+    player.bearing = bearing;
 }
 
 function jump(planet){
@@ -213,6 +223,7 @@ function jump(planet){
     player.dx = Math.sin(bearing) * player.v;
     player.dy = -Math.cos(bearing) * player.v;
     player.in_orbit = false;
+    player.bearing = -1;
 }
 
 function check_is_alive(){
@@ -228,15 +239,17 @@ function check_is_alive(){
     return true;
 }
 
-function check_coin(coin, is_planet){
-    var player = game.player;
-    if(get_dist(player, coin) <= player.r+coin.r){ 
-        if(is_planet){
+function check_planet_coins(){
+    var player = game.player; 
+    if(player.bearing < 0){ return; }
+
+    game.base.coins.forEach(function(coin){
+        if(Math.abs(player.bearing - coin.bearing) <= Math.PI/COIN_M){
             game.base.coins.splice(game.base.coins.indexOf(coin),1);
             game.canvas.removeChild(coin);
             update_score();
         }
-    }
+    });
 }
 
 /* base functions */
@@ -301,9 +314,7 @@ function loop(){
 
     // coin checks
     if(game.base && game.base.coins){
-        game.base.coins.forEach(function(c){
-            check_coin(c, is_planet=true);
-        });
+        check_planet_coins();
     }
 
     move(game.player); 
